@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorChangedListener;
 import com.flask.colorpicker.OnColorSelectedListener;
@@ -23,6 +22,7 @@ import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
 public class SampleActivity extends AppCompatActivity {
+
 	private View root;
 	private int currentBackgroundColor = 0xffffffff;
 
@@ -38,8 +38,7 @@ public class SampleActivity extends AppCompatActivity {
 			public void onClick(View v) {
 				final Context context = SampleActivity.this;
 
-				ColorPickerDialogBuilder
-						.with(context)
+				ColorPickerDialogBuilder.with(context)
 						.setTitle(R.string.color_dialog_title)
 						.initialColor(currentBackgroundColor)
 						.wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
@@ -65,15 +64,12 @@ public class SampleActivity extends AppCompatActivity {
 									StringBuilder sb = null;
 
 									for (Integer color : allColors) {
-										if (color == null)
-											continue;
-										if (sb == null)
-											sb = new StringBuilder("Color List:");
+										if (color == null) continue;
+										if (sb == null) sb = new StringBuilder("Color List:");
 										sb.append("\r\n#" + Integer.toHexString(color).toUpperCase());
 									}
 
-									if (sb != null)
-										Toast.makeText(getApplicationContext(), sb.toString(), Toast.LENGTH_SHORT).show();
+									if (sb != null) Toast.makeText(getApplicationContext(), sb.toString(), Toast.LENGTH_SHORT).show();
 								}
 							}
 						})
@@ -136,6 +132,7 @@ public class SampleActivity extends AppCompatActivity {
 	}
 
 	public static class AdaptedDialogFragment extends AppCompatDialogFragment {
+
 		public AdaptedDialogFragment() {
 		}
 

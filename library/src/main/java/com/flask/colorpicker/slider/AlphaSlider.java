@@ -5,12 +5,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
-
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.Utils;
 import com.flask.colorpicker.builder.PaintBuilder;
 
 public class AlphaSlider extends AbsCustomSlider {
+
 	public int color;
 	private Paint alphaPatternPaint = PaintBuilder.newPaint().build();
 	private Paint barPaint = PaintBuilder.newPaint().build();
@@ -54,8 +54,7 @@ public class AlphaSlider extends AbsCustomSlider {
 
 	@Override
 	protected void onValueChanged(float value) {
-		if (colorPicker != null)
-			colorPicker.setAlphaValue(value);
+		if (colorPicker != null) colorPicker.setAlphaValue(value);
 	}
 
 	@Override
@@ -63,8 +62,7 @@ public class AlphaSlider extends AbsCustomSlider {
 		solid.setColor(color);
 		solid.setAlpha(Math.round(value * 255));
 		canvas.drawCircle(x, y, handleRadius, clearingStroke);
-		if (value < 1)
-			canvas.drawCircle(x, y, handleRadius * 0.75f, alphaPatternPaint);
+		if (value < 1) canvas.drawCircle(x, y, handleRadius * 0.75f, alphaPatternPaint);
 		canvas.drawCircle(x, y, handleRadius * 0.75f, solid);
 	}
 

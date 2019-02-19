@@ -73,6 +73,7 @@ public class SampleActivity3 extends AppCompatActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
+
 		/**
 		 * The fragment argument representing the section number for this
 		 * fragment.
@@ -95,8 +96,7 @@ public class SampleActivity3 extends AppCompatActivity {
 		}
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-		                         Bundle savedInstanceState) {
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_sample_activity3, container, false);
 			TextView textView = (TextView) rootView.findViewById(R.id.section_label);
 			textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));

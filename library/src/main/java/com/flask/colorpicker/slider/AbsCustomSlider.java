@@ -9,10 +9,10 @@ import android.support.annotation.DimenRes;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
 import com.flask.colorpicker.R;
 
 public abstract class AbsCustomSlider extends View {
+
 	protected Bitmap bitmap;
 	protected Canvas bitmapCanvas;
 	protected Bitmap bar;
@@ -41,11 +41,9 @@ public abstract class AbsCustomSlider extends View {
 	}
 
 	private void init(Context context, AttributeSet attrs) {
-		TypedArray styledAttrs = context.getTheme().obtainStyledAttributes(
-			attrs, R.styleable.AbsCustomSlider, 0, 0);
+		TypedArray styledAttrs = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AbsCustomSlider, 0, 0);
 		try {
-			inVerticalOrientation = styledAttrs.getBoolean(
-				R.styleable.AbsCustomSlider_inVerticalOrientation, inVerticalOrientation);
+			inVerticalOrientation = styledAttrs.getBoolean(R.styleable.AbsCustomSlider_inVerticalOrientation, inVerticalOrientation);
 		} finally {
 			styledAttrs.recycle();
 		}
@@ -56,8 +54,7 @@ public abstract class AbsCustomSlider extends View {
 		barHeight = getDimension(R.dimen.default_slider_bar_height);
 		barOffsetX = handleRadius;
 
-		if (bar == null)
-			createBitmaps();
+		if (bar == null) createBitmaps();
 		drawBar(barCanvas);
 		invalidate();
 	}
@@ -81,6 +78,44 @@ public abstract class AbsCustomSlider extends View {
 			bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 			bitmapCanvas = new Canvas(bitmap);
 		}
+	}
+
+	protected abstract void drawBar(Canvas barCanvas);
+
+	protected abstract void onValueChanged(float value);
+
+	protected abstract void drawHandle(Canvas canvas, float x, float y);
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+			case MotionEvent.ACTION_MOVE: {
+				if (bar != null) {
+					if (inVerticalOrientation) {
+						value = 1 - (event.getY() - barOffsetX) / bar.getWidth();
+					} else {
+						value = (event.getX() - barOffsetX) / bar.getWidth();
+					}
+					value = Math.max(0, Math.min(value, 1));
+					onValueChanged(value);
+					invalidate();
+				}
+				break;
+			}
+			case MotionEvent.ACTION_UP: {
+				onValueChanged(value);
+				if (onValueChangedListener != null) onValueChangedListener.onValueChanged(value);
+				invalidate();
+			}
+		}
+		return true;
+	}
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		updateBar();
 	}
 
 	@Override
@@ -111,67 +146,22 @@ public abstract class AbsCustomSlider extends View {
 		}
 	}
 
-	protected abstract void drawBar(Canvas barCanvas);
-
-	protected abstract void onValueChanged(float value);
-
-	protected abstract void drawHandle(Canvas canvas, float x, float y);
-
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		super.onSizeChanged(w, h, oldw, oldh);
-		updateBar();
-	}
-
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int width = 0;
-		if (widthMode == MeasureSpec.UNSPECIFIED)
-			width = widthMeasureSpec;
-		else if (widthMode == MeasureSpec.AT_MOST)
+		if (widthMode == MeasureSpec.UNSPECIFIED) { width = widthMeasureSpec; } else if (widthMode == MeasureSpec.AT_MOST) {
 			width = MeasureSpec.getSize(widthMeasureSpec);
-		else if (widthMode == MeasureSpec.EXACTLY)
-			width = MeasureSpec.getSize(widthMeasureSpec);
+		} else if (widthMode == MeasureSpec.EXACTLY) width = MeasureSpec.getSize(widthMeasureSpec);
 
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 		int height = 0;
-		if (heightMode == MeasureSpec.UNSPECIFIED)
-			height = heightMeasureSpec;
-		else if (heightMode == MeasureSpec.AT_MOST)
+		if (heightMode == MeasureSpec.UNSPECIFIED) { height = heightMeasureSpec; } else if (heightMode == MeasureSpec.AT_MOST) {
 			height = MeasureSpec.getSize(heightMeasureSpec);
-		else if (heightMode == MeasureSpec.EXACTLY)
-			height = MeasureSpec.getSize(heightMeasureSpec);
+		} else if (heightMode == MeasureSpec.EXACTLY) height = MeasureSpec.getSize(heightMeasureSpec);
 
 		setMeasuredDimension(width, height);
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-			case MotionEvent.ACTION_MOVE: {
-				if (bar != null) {
-					if (inVerticalOrientation) {
-						value = 1 - (event.getY() - barOffsetX) / bar.getWidth();
-					} else {
-						value = (event.getX() - barOffsetX) / bar.getWidth();
-					}
-					value = Math.max(0, Math.min(value, 1));
-					onValueChanged(value);
-					invalidate();
-				}
-				break;
-			}
-			case MotionEvent.ACTION_UP: {
-				onValueChanged(value);
-				if (onValueChangedListener != null)
-					onValueChangedListener.onValueChanged(value);
-				invalidate();
-			}
-		}
-		return true;
 	}
 
 	protected int getDimension(@DimenRes int id) {

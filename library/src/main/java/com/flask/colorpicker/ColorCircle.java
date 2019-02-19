@@ -3,6 +3,7 @@ package com.flask.colorpicker;
 import android.graphics.Color;
 
 public class ColorCircle {
+
 	private float x, y;
 	private float[] hsv = new float[3];
 	private float[] hsvClone;
@@ -31,8 +32,7 @@ public class ColorCircle {
 	}
 
 	public float[] getHsvWithLightness(float lightness) {
-		if (hsvClone == null)
-			hsvClone = hsv.clone();
+		if (hsvClone == null) hsvClone = hsv.clone();
 		hsvClone[0] = hsv[0];
 		hsvClone[1] = hsv[1];
 		hsvClone[2] = lightness;

@@ -2,11 +2,11 @@ package com.flask.colorpicker.renderer;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-
 import com.flask.colorpicker.ColorCircle;
 import com.flask.colorpicker.builder.PaintBuilder;
 
 public class SimpleColorWheelRenderer extends AbsColorWheelRenderer {
+
 	private Paint selectorFill = PaintBuilder.newPaint().build();
 	private float[] hsv = new float[3];
 
@@ -36,9 +36,7 @@ public class SimpleColorWheelRenderer extends AbsColorWheelRenderer {
 
 				colorWheelRenderOption.targetCanvas.drawCircle(x, y, size - colorWheelRenderOption.strokeWidth, selectorFill);
 
-				if (currentCount >= setSize)
-					colorCircleList.add(new ColorCircle(x, y, hsv));
-				else colorCircleList.get(currentCount).set(x, y, hsv);
+				if (currentCount >= setSize) { colorCircleList.add(new ColorCircle(x, y, hsv)); } else colorCircleList.get(currentCount).set(x, y, hsv);
 				currentCount++;
 			}
 		}

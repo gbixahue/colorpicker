@@ -13,7 +13,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
-
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
@@ -26,13 +25,10 @@ public class ColorPickerPreference extends Preference {
 
 	protected ColorPickerView.WHEEL_TYPE wheelType;
 	protected int density;
-
+	protected ImageView colorIndicator;
 	private String pickerTitle;
 	private String pickerButtonCancel;
 	private String pickerButtonOk;
-
-	protected ImageView colorIndicator;
-
 
 	public ColorPickerPreference(Context context) {
 		super(context);
@@ -48,6 +44,14 @@ public class ColorPickerPreference extends Preference {
 		initWith(context, attrs);
 	}
 
+	public static int darken(int color, float factor) {
+		int a = Color.alpha(color);
+		int r = Color.red(color);
+		int g = Color.green(color);
+		int b = Color.blue(color);
+
+		return Color.argb(a, Math.max((int) (r * factor), 0), Math.max((int) (g * factor), 0), Math.max((int) (b * factor), 0));
+	}
 
 	private void initWith(Context context, AttributeSet attrs) {
 		final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorPickerPreference);
@@ -62,24 +66,19 @@ public class ColorPickerPreference extends Preference {
 			selectedColor = typedArray.getInt(R.styleable.ColorPickerPreference_initialColor, 0xffffffff);
 
 			pickerTitle = typedArray.getString(R.styleable.ColorPickerPreference_pickerTitle);
-			if (pickerTitle==null)
-				pickerTitle = "Choose color";
+			if (pickerTitle == null) pickerTitle = "Choose color";
 
 			pickerButtonCancel = typedArray.getString(R.styleable.ColorPickerPreference_pickerButtonCancel);
-			if (pickerButtonCancel==null)
-				pickerButtonCancel = "cancel";
+			if (pickerButtonCancel == null) pickerButtonCancel = "cancel";
 
 			pickerButtonOk = typedArray.getString(R.styleable.ColorPickerPreference_pickerButtonOk);
-			if (pickerButtonOk==null)
-				pickerButtonOk = "ok";
-
+			if (pickerButtonOk == null) pickerButtonOk = "ok";
 		} finally {
 			typedArray.recycle();
 		}
 
 		setWidgetLayoutResource(R.layout.color_widget);
 	}
-
 
 	@Override
 	protected void onBindView(@NonNull View view) {
@@ -91,26 +90,45 @@ public class ColorPickerPreference extends Preference {
 		colorIndicator = (ImageView) view.findViewById(R.id.color_indicator);
 
 		Drawable currentDrawable = colorIndicator.getDrawable();
-		if (currentDrawable!=null && currentDrawable instanceof GradientDrawable)
-			colorChoiceDrawable = (GradientDrawable) currentDrawable;
+		if (currentDrawable != null && currentDrawable instanceof GradientDrawable) colorChoiceDrawable = (GradientDrawable) currentDrawable;
 
-		if (colorChoiceDrawable==null) {
+		if (colorChoiceDrawable == null) {
 			colorChoiceDrawable = new GradientDrawable();
 			colorChoiceDrawable.setShape(GradientDrawable.OVAL);
 		}
 
-		int tmpColor = isEnabled()
-			? selectedColor
-			: darken(selectedColor, .5f);
+		int tmpColor = isEnabled() ? selectedColor : darken(selectedColor, .5f);
 
 		colorChoiceDrawable.setColor(tmpColor);
-		colorChoiceDrawable.setStroke((int) TypedValue.applyDimension(
-			TypedValue.COMPLEX_UNIT_DIP,
-			1,
-			res.getDisplayMetrics()
-		), darken(tmpColor, .8f));
+		colorChoiceDrawable.setStroke((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, res.getDisplayMetrics()), darken(tmpColor, .8f));
 
 		colorIndicator.setImageDrawable(colorChoiceDrawable);
+	}
+
+	@Override
+	protected void onClick() {
+		ColorPickerDialogBuilder builder = ColorPickerDialogBuilder.with(getContext())
+				.setTitle(pickerTitle)
+				.initialColor(selectedColor)
+				.wheelType(wheelType)
+				.density(density)
+				.setPositiveButton(pickerButtonOk, new ColorPickerClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int selectedColorFromPicker, Integer[] allColors) {
+						setValue(selectedColorFromPicker);
+					}
+				})
+				.setNegativeButton(pickerButtonCancel, null);
+
+		if (!alphaSlider && !lightSlider) { builder.noSliders(); } else if (!alphaSlider) { builder.lightnessSliderOnly(); } else if (!lightSlider)
+			builder.alphaSliderOnly();
+
+		builder.build().show();
+	}
+
+	@Override
+	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
+		setValue(restoreValue ? getPersistedInt(0) : (Integer) defaultValue);
 	}
 
 	public void setValue(int value) {
@@ -119,49 +137,5 @@ public class ColorPickerPreference extends Preference {
 			persistInt(value);
 			notifyChanged();
 		}
-	}
-
-	@Override
-	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-		setValue(restoreValue ? getPersistedInt(0) : (Integer) defaultValue);
-	}
-
-
-	@Override
-	protected void onClick() {
-		ColorPickerDialogBuilder builder = ColorPickerDialogBuilder
-			.with(getContext())
-			.setTitle(pickerTitle)
-			.initialColor(selectedColor)
-			.wheelType(wheelType)
-			.density(density)
-			.setPositiveButton(pickerButtonOk, new ColorPickerClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int selectedColorFromPicker, Integer[] allColors) {
-					setValue(selectedColorFromPicker);
-				}
-			})
-			.setNegativeButton(pickerButtonCancel, null);
-
-		if (!alphaSlider && !lightSlider) builder.noSliders();
-		else if (!alphaSlider) builder.lightnessSliderOnly();
-		else if (!lightSlider) builder.alphaSliderOnly();
-
-
-		builder
-			.build()
-			.show();
-	}
-
-	public static int darken(int color, float factor) {
-		int a = Color.alpha(color);
-		int r = Color.red(color);
-		int g = Color.green(color);
-		int b = Color.blue(color);
-
-		return Color.argb(a,
-			Math.max((int)(r * factor), 0),
-			Math.max((int)(g * factor), 0),
-			Math.max((int)(b * factor), 0));
 	}
 }

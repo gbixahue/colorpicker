@@ -1,10 +1,10 @@
 package com.flask.colorpicker.builder;
 
-import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
 import android.view.Gravity;
 import android.view.View;
@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorChangedListener;
 import com.flask.colorpicker.OnColorSelectedListener;
@@ -23,6 +22,7 @@ import com.flask.colorpicker.slider.AlphaSlider;
 import com.flask.colorpicker.slider.LightnessSlider;
 
 public class ColorPickerDialogBuilder {
+
 	private AlertDialog.Builder builder;
 	private LinearLayout pickerContainer;
 	private ColorPickerView colorPickerView;
@@ -37,7 +37,7 @@ public class ColorPickerDialogBuilder {
 	private boolean isPreviewEnabled = false;
 	private int pickerCount = 1;
 	private int defaultMargin = 0;
-	private Integer[] initialColor = new Integer[]{null, null, null, null, null};
+	private Integer[] initialColor = new Integer[] {null, null, null, null, null};
 
 	private ColorPickerDialogBuilder(Context context) {
 		this(context, 0);
@@ -70,6 +70,10 @@ public class ColorPickerDialogBuilder {
 		return new ColorPickerDialogBuilder(context, theme);
 	}
 
+	private static int getDimensionAsPx(Context context, int rid) {
+		return (int) (context.getResources().getDimension(rid) + .5f);
+	}
+
 	public ColorPickerDialogBuilder setTitle(String title) {
 		builder.setTitle(title);
 		return this;
@@ -84,7 +88,6 @@ public class ColorPickerDialogBuilder {
 		this.initialColor[0] = initialColor;
 		return this;
 	}
-
 
 	public ColorPickerDialogBuilder initialColors(int[] initialColor) {
 		for (int i = 0; i < initialColor.length && i < this.initialColor.length; i++) {
@@ -184,17 +187,14 @@ public class ColorPickerDialogBuilder {
 
 	public ColorPickerDialogBuilder showColorPreview(boolean showPreview) {
 		isPreviewEnabled = showPreview;
-		if (!showPreview)
-			pickerCount = 1;
+		if (!showPreview) pickerCount = 1;
 		return this;
 	}
 
 	public ColorPickerDialogBuilder setPickerCount(int pickerCount) throws IndexOutOfBoundsException {
-		if (pickerCount < 1 || pickerCount > 5)
-			throw new IndexOutOfBoundsException("Picker Can Only Support 1-5 Colors");
+		if (pickerCount < 1 || pickerCount > 5) throw new IndexOutOfBoundsException("Picker Can Only Support 1-5 Colors");
 		this.pickerCount = pickerCount;
-		if (this.pickerCount > 1)
-			this.isPreviewEnabled = true;
+		if (this.pickerCount > 1) this.isPreviewEnabled = true;
 		return this;
 	}
 
@@ -203,7 +203,8 @@ public class ColorPickerDialogBuilder {
 		colorPickerView.setInitialColors(initialColor, getStartOffset(initialColor));
 
 		if (isLightnessSliderEnabled) {
-			LinearLayout.LayoutParams layoutParamsForLightnessBar = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getDimensionAsPx(context, R.dimen.default_slider_height));
+			LinearLayout.LayoutParams layoutParamsForLightnessBar =
+					new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getDimensionAsPx(context, R.dimen.default_slider_height));
 			lightnessSlider = new LightnessSlider(context);
 			lightnessSlider.setLayoutParams(layoutParamsForLightnessBar);
 			pickerContainer.addView(lightnessSlider);
@@ -211,7 +212,8 @@ public class ColorPickerDialogBuilder {
 			lightnessSlider.setColor(getStartColor(initialColor));
 		}
 		if (isAlphaSliderEnabled) {
-			LinearLayout.LayoutParams layoutParamsForAlphaBar = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getDimensionAsPx(context, R.dimen.default_slider_height));
+			LinearLayout.LayoutParams layoutParamsForAlphaBar =
+					new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getDimensionAsPx(context, R.dimen.default_slider_height));
 			alphaSlider = new AlphaSlider(context);
 			alphaSlider.setLayoutParams(layoutParamsForAlphaBar);
 			pickerContainer.addView(alphaSlider);
@@ -219,15 +221,16 @@ public class ColorPickerDialogBuilder {
 			alphaSlider.setColor(getStartColor(initialColor));
 		}
 		if (isColorEditEnabled) {
-			LinearLayout.LayoutParams layoutParamsForColorEdit = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			LinearLayout.LayoutParams layoutParamsForColorEdit =
+					new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			colorEdit = (EditText) View.inflate(context, R.layout.picker_edit, null);
-			colorEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+			colorEdit.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 			colorEdit.setSingleLine();
 			colorEdit.setVisibility(View.GONE);
 
 			// limit number of characters to hexColors
 			int maxLength = isAlphaSliderEnabled ? 9 : 7;
-			colorEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
+			colorEdit.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
 			pickerContainer.addView(colorEdit, layoutParamsForColorEdit);
 
@@ -244,8 +247,7 @@ public class ColorPickerDialogBuilder {
 				colorImage.setImageDrawable(new ColorDrawable(Color.WHITE));
 			} else {
 				for (int i = 0; i < initialColor.length && i < this.pickerCount; i++) {
-					if (initialColor[i] == null)
-						break;
+					if (initialColor[i] == null) break;
 					LinearLayout colorLayout = (LinearLayout) View.inflate(context, R.layout.color_selector, null);
 					ImageView colorImage = (ImageView) colorLayout.findViewById(R.id.image_preview);
 					colorImage.setImageDrawable(new ColorDrawable(initialColor[i]));
@@ -273,10 +275,6 @@ public class ColorPickerDialogBuilder {
 	private int getStartColor(Integer[] colors) {
 		Integer startColor = getStartOffset(colors);
 		return startColor == null ? Color.WHITE : colors[startColor];
-	}
-
-	private static int getDimensionAsPx(Context context, int rid) {
-		return (int) (context.getResources().getDimension(rid) + .5f);
 	}
 
 	private void positiveButtonOnClick(DialogInterface dialog, ColorPickerClickListener onClickListener) {

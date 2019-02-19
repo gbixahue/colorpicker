@@ -6,12 +6,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
-
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.Utils;
 import com.flask.colorpicker.builder.PaintBuilder;
 
 public class LightnessSlider extends AbsCustomSlider {
+
 	private int color;
 	private Paint barPaint = PaintBuilder.newPaint().build();
 	private Paint solid = PaintBuilder.newPaint().build();
@@ -48,8 +48,7 @@ public class LightnessSlider extends AbsCustomSlider {
 
 	@Override
 	protected void onValueChanged(float value) {
-		if (colorPicker != null)
-			colorPicker.setLightness(value);
+		if (colorPicker != null) colorPicker.setLightness(value);
 	}
 
 	@Override

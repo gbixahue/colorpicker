@@ -1,23 +1,23 @@
 package com.flask.colorpicker.renderer;
 
 import com.flask.colorpicker.ColorCircle;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbsColorWheelRenderer implements ColorWheelRenderer {
+
 	protected ColorWheelRenderOption colorWheelRenderOption;
 	protected List<ColorCircle> colorCircleList = new ArrayList<>();
-
-	public void initWith(ColorWheelRenderOption colorWheelRenderOption) {
-		this.colorWheelRenderOption = colorWheelRenderOption;
-		this.colorCircleList.clear();
-	}
 
 	@Override
 	public ColorWheelRenderOption getRenderOption() {
 		if (colorWheelRenderOption == null) colorWheelRenderOption = new ColorWheelRenderOption();
 		return colorWheelRenderOption;
+	}
+
+	public void initWith(ColorWheelRenderOption colorWheelRenderOption) {
+		this.colorWheelRenderOption = colorWheelRenderOption;
+		this.colorCircleList.clear();
 	}
 
 	public List<ColorCircle> getColorCircleList() {
